@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException} from '@nestjs/common';
 import { Coffee } from "./entities/coffee.entity";
-import {UpdateCoffeeDto} from "./dto/update-coffee.dto";
-import {InjectRepository} from "@nestjs/typeorm";
-import {Repository} from "typeorm";
-import {CreateCoffeeDto} from "./dto/create-coffee.dto";
-import {Flavor} from "./entities/flavor.entity";
+import { UpdateCoffeeDto } from "./dto/update-coffee.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { CreateCoffeeDto } from "./dto/create-coffee.dto";
+import { Flavor } from "./entities/flavor.entity";
+import { PaginationQueryDto } from "../common/dto/pagination-query.dto";
 
 @Injectable()
 export class CoffeesService {
@@ -19,20 +20,29 @@ export class CoffeesService {
 
     ) {}
 
-    findAll()  {
+    findAll(paginationQuery: PaginationQueryDto)  {
+
+        const { limit, offset } = paginationQuery;
+
         return this.coffeeRepository.find({
             relations: ['flavors'],
+            skip: offset,
+            take: limit,
         });
+
     }
 
     async findOne(id: number) {
+
         const coffee = await this.coffeeRepository.findOne({
             where: { id },
             relations: ['flavors'],
         });
+
         if(!coffee) {
             throw new NotFoundException(`Coffee #${id} not found`);
         }
+
         return coffee;
     }
 
@@ -48,6 +58,7 @@ export class CoffeesService {
         });
 
         return this.coffeeRepository.save(coffee);
+
     }
 
     async update(id: number, updateCoffeeDto: UpdateCoffeeDto) {
@@ -67,6 +78,7 @@ export class CoffeesService {
         }
 
         return this.coffeeRepository.save(coffee);
+
     }
 
     async remove(id: number) {
@@ -83,5 +95,6 @@ export class CoffeesService {
         }
 
         return this.flavorRepository.create({ name });
+
     }
 }
