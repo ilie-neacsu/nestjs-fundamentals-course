@@ -25,6 +25,11 @@ export class CoffeesController {
     return this.coffeesService.create(createCoffeeDto);
   }
 
+  @Post('verbose')
+  createVerbose(@Body() createCoffeeDto: CreateCoffeeDto) {
+    return this.coffeesService.create(createCoffeeDto);
+  }
+
   @Patch(':id')
   update(@Param('id') id: number, @Body() updateCoffeeDto: UpdateCoffeeDto) {
     return this.coffeesService.update(id, updateCoffeeDto);
